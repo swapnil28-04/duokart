@@ -1,0 +1,50 @@
+services:
+  # ═══ MongoDB Database ═══
+  mongodb:
+    image: mongo:7
+    container_name: duokart-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - duokart-network
+
+  # ═══ Backend API ═══
+  backend:
+    build: ./backend
+    container_name: duokart-backend
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URI=mongodb://mongodb:27017/duokart
+      - JWT_SECRET=duokart_super_secret_key_change_this_in_production_2025
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+    networks:
+      - duokart-network
+
+  # ═══ Frontend React App ═══
+  frontend:
+    build: ./frontend
+    container_name: duokart-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - duokart-network
+
+# Persistent storage for MongoDB
+volumes:
+  mongo-data:
+
+# Internal network for containers to talk
+networks:
+  duokart-network:
+    driver: bridge

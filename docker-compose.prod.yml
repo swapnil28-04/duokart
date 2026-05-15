@@ -1,0 +1,50 @@
+services:
+  # ═══ MongoDB Database ═══
+  mongodb:
+    image: mongo:7
+    container_name: duokart-mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=duokart
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - duokart-network
+
+  # ═══ Backend API ═══
+  backend:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/duokart-backend:latest
+    container_name: duokart-backend
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URI=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/duokart?authSource=admin
+      - JWT_SECRET=${JWT_SECRET}
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+    networks:
+      - duokart-network
+
+  # ═══ Frontend React App ═══
+  frontend:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/duokart-frontend:latest
+    container_name: duokart-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - duokart-network
+
+volumes:
+  mongo-data:
+
+networks:
+  duokart-network:
+    driver: bridge
