@@ -3,7 +3,7 @@
 A full-stack containerized marketplace where users can shop as either **Customer (B2C)** or **Business (B2B)** — same products, different pricing logic.
 
 ## 🎯 Live Demo
-🌍 **[Visit DuoKart](http://13.232.194.14)** (deployed on AWS EC2)
+🌍 **[Visit DuoKart](http://13.232.171.81)** (deployed on AWS EC2)
 
 ## 🛠️ Tech Stack
 
