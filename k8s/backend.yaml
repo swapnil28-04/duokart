@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: duokart-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5001
+        env:
+        - name: MONGO_URI
+          value: "mongodb://mongodb-service:27017/duokart"
+        - name: JWT_SECRET
+          value: "duokart-secret-key-2026"
+        - name: NODE_ENV
+          value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 5001
+    targetPort: 5001
+  type: ClusterIP
